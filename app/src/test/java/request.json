@@ -1,0 +1,9 @@
+{
+  "jsonrpc": "2.0",
+  "method": "Player.Open",
+  "params": {
+    "item": {
+      "file": "plugin://plugin.video.youtube/?action=play_video&videoid=DCZG4EKeRr8"
+    }
+  }
+}
