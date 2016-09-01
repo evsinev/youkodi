@@ -1,5 +1,7 @@
 package com.payneteasy.youkodi;
 
+import android.widget.Toast;
+
 import com.payneteasy.youkodi.model.MediaInfo;
 
 import org.json.JSONObject;
@@ -16,18 +18,33 @@ import java.nio.charset.StandardCharsets;
 public class KodiRemoteService {
 
     public String playYoutube(String aUrl) {
-        String id = getVideoId(aUrl);
-
         try {
-            return doPost("http://192.168.3.122/jsonrpc"
-                    , ("{'jsonrpc': '2.0'" +
-                            ", 'method': 'Player.Open'" +
-                            ", 'params': { 'item': {'file' : 'plugin://plugin.video.youtube/?action=play_video&videoid="+id+"' }}}")
-                    .replace("'", "\"")
-            );
-        } catch (IOException e) {
+            if(isYoutube(aUrl)) {
+                String id = getVideoId(aUrl);
+                return doPost("http://192.168.3.122/jsonrpc"
+                        , ("{'jsonrpc': '2.0'" +
+                                ", 'method': 'Player.Open'" +
+                                ", 'params': { 'item': {'file' : 'plugin://plugin.video.youtube/?action=play_video&videoid="+id+"' }}}")
+                                .replace("'", "\"")
+                );
+            } else {
+                return doPost("http://192.168.3.122/jsonrpc"
+                        , ("{'jsonrpc': '2.0'" +
+                                ", 'method': 'Player.Open'" +
+                                ", 'id': 'play-on-xbmc'" +
+                                ", 'params': { 'item': {'file' : '"+aUrl+"' }}}")
+                                .replace("'", "\"")
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return e.getMessage();
         }
+
+    }
+
+    private boolean isYoutube(String aUrl) {
+        return aUrl.contains("youtu.be") || aUrl.contains("youtube.com");
     }
 
     private String doPost(String aUrl, String aBody) throws IOException {
